@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/profile.css">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <title>결제페이지</title>
+</head>
+<body>
+    <div id="page-content-wrapper">
+        <!-- 상단 navbar-->
+        <%- include("../../common/profile/navbar") %> 
+        <div class="container-fluid">
+            <h1 class="m-3" style="text-align:center">상세베팅내역</h1>
+            <div class="card m-2" style="border: 2px solid black;">
+                <% for(var i = 0; i < result[0].total_num; i++) { %>
+                    <% var test = "result[0].result" + (i+1); if(eval(test)) { %>
+                        <div class="row m-2 text-center border border-2 border-primary" style="background: rgba(0,0,255,0.2)">
+                            <% if(!result2[i][0].league_name){ %>
+                                <div class="col-1 fw-bold text-center opacity-50"><%= i+1 %></div>
+                                <div class="col-11 opacity-50">&nbsp;</div>
+                                <div class="col-12 fw-bold opacity-50" style="font-size:20px;">무효</div>
+                                <div class="col-8 opacity-50">&nbsp;</div>
+                                <div class="col-4 text-danger text-center opacity-50" style="font-size:20px;">1.00</div>
+                            <% } else { %>
+                            <div class="col-1 fw-bold text-center"><%= i+1 %></div>
+                            <div class="col-4" style="font-size:14px;"><%= result2[i][0].league_name %></div>
+                            <div class="col-7" style="font-size:14px;"><%= result2[i][0].match_date.toLocaleString() %></div>
+                            <div class="col-5 border border-danger" style="font-size:14px;"><%= result2[i][0].home_name %></div>
+                            <div class="col-2" style="font-size:13px;">VS</div>
+                            <div class="col-5 border border-danger" style="font-size:14px;"><%= result2[i][0].away_name %></div>
+                            <div class="col-4 p-1 text-center" style="font-size:14px;"><%= eval('result[0].type' + (i+1)) %></div>
+                            <div class="col-4 fw-bold text-center" style="font-size:20px;"><%= eval('result[0].pick' + (i+1)) %></div>
+                            <div class="col-4 text-danger text-center" style="font-size:20px;"><%= eval('result[0].rate' + (i+1)) %></div>
+                            <% } %>
+                        </div>
+                    <% } else if (eval(test) == 0) { %>
+                        <div class="row m-2 text-center border border-2 border-primary" style="background: rgba(255,0,0,0.2)">
+                            <% if(!result2[i][0].league_name){ %>
+                                <div class="col-1 fw-bold text-center opacity-50"><%= i+1 %></div>
+                                <div class="col-11 opacity-50">&nbsp;</div>
+                                <div class="col-12 fw-bold opacity-50" style="font-size:20px;">무효</div>
+                                <div class="col-8 opacity-50">&nbsp;</div>
+                                <div class="col-4 text-danger text-center opacity-50" style="font-size:20px;">1.00</div>
+                            <% } else { %>
+                            <div class="col-1 fw-bold text-center"><%= i+1 %></div>
+                            <div class="col-4" style="font-size:14px;"><%= result2[i][0].league_name %></div>
+                            <div class="col-7" style="font-size:14px;"><%= result2[i][0].match_date.toLocaleString() %></div>
+                            <div class="col-5 border border-danger" style="font-size:14px;"><%= result2[i][0].home_name %></div>
+                            <div class="col-2" style="font-size:13px;">VS</div>
+                            <div class="col-5 border border-danger" style="font-size:14px;"><%= result2[i][0].away_name %></div>
+                            <div class="col-4 p-1 text-center" style="font-size:14px;"><%= eval('result[0].type' + (i+1)) %></div>
+                            <div class="col-4 fw-bold text-center" style="font-size:20px;"><%= eval('result[0].pick' + (i+1)) %></div>
+                            <div class="col-4 text-danger text-center" style="font-size:20px;"><%= eval('result[0].rate' + (i+1)) %></div>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="row m-2 text-center border border-2 border-primary">
+                            <% if(!result2[i][0].league_name){ %>
+                                <div class="col-1 fw-bold text-center opacity-50"><%= i+1 %></div>
+                                <div class="col-11 opacity-50">&nbsp;</div>
+                                <div class="col-12 fw-bold opacity-50" style="font-size:20px;">무효</div>
+                                <div class="col-8 opacity-50">&nbsp;</div>
+                                <div class="col-4 text-danger text-center opacity-50" style="font-size:20px;">1.00</div>
+                            <% } else { %>
+                            <div class="col-1 fw-bold text-center"><%= i+1 %></div>
+                            <div class="col-4" style="font-size:14px;"><%= result2[i][0].league_name %></div>
+                            <div class="col-7" style="font-size:14px;"><%= result2[i][0].match_date.toLocaleString() %></div>
+                            <div class="col-5 border border-danger" style="font-size:14px;"><%= result2[i][0].home_name %></div>
+                            <div class="col-2" style="font-size:13px;">VS</div>
+                            <div class="col-5 border border-danger" style="font-size:14px;"><%= result2[i][0].away_name %></div>
+                            <div class="col-4 p-1 text-center" style="font-size:14px;"><%= eval('result[0].type' + (i+1)) %></div>
+                            <div class="col-4 fw-bold text-center" style="font-size:20px;"><%= eval('result[0].pick' + (i+1)) %></div>
+                            <div class="col-4 text-danger text-center" style="font-size:20px;"><%= eval('result[0].rate' + (i+1)) %></div>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } %>
+            </div>
+
+            <!-- 결제페이지 최종결과 -->
+            <div class="card m-2" style="border: 2px solid black;">
+                <div class="row m-2 text-center">
+                    <div class="col-3">경기수</div>
+                    <div class="col-3">총배당</div>
+                    <div class="col-6">베팅금액</div>
+                    <div class="col-3 text-center"><%= result[0].total_num %></div>
+                    <div class="col-3 text-center text-danger fw-bold"><%= result[0].total_rate %></div>
+                    <div class="col-6 text-center mb-2"><%= result[0].money %></div>
+                    <div class="row py-2 border-top border-3">
+                        <div class="col-5 border border-primary rounded-pill">예상적중금액</div>
+                        <div class="col-7 text-center text-primary fw-bold"><%= result[0].final_money %></div>
+                    </div>
+                    <div class="fw-bold fs-3"><%= result[0].state %></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

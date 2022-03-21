@@ -12,24 +12,22 @@
     <title>결제페이지</title>
 </head>
 <body>
+    <!-- Page content wrapper-->
     <div id="page-content-wrapper">
         <!-- 상단 navbar-->
-        <%- include("common/profile/navbar") %>
+        <%- include("../../common/profile/navbar") %>
         <!-- betting page content -->
-        <h1 class="m-3" style="text-align:center">MY PROFILE</h1>
+        <h1 class="m-3" style="text-align:center">베팅내역</h1>
         <div class="container-fluid" style="max-width: 700px;">
-            <ul class="list-group p-2">
-                <li class="list-group-item p-3">아이디: &nbsp;&nbsp;&nbsp;<%= result[0].id %></li>
-                <li class="list-group-item p-3 d-flex">
-                    <div class="me-auto">비밀번호: &nbsp;&nbsp;&nbsp;******</div>
-                    <button class="btn-sm btn-danger">비밀번호변경</button>
-                </li>
-                <li class="list-group-item p-3 d-flex">
-                    <div class="me-auto">돈: &nbsp;&nbsp;&nbsp;<%= result[0].money %>원</div>
-                    <button class="btn-sm btn-warning" onclick="location.href='/charge'">충전하기</button>
-                </li>
-                <li class="list-group-item p-3">가입일: &nbsp;&nbsp;&nbsp;<%= result[0].in_date.toLocaleString() %></li>
-            </ul>
+            <% for (var i = 0; i < result.length; i++) { %>
+            <div class="row m-2 my-3 bg-light border border-2 border-primary" style="cursor:pointer" onclick="location.href='/profile/bet/<%= result[i].bet_id %>'">
+                <div class="col-1 fw-bold text-center" style="padding:0;"><%= i+1 %></div>
+                <div class="col-11 text-center" style="padding:0;"><%= result[i].bet_date.toLocaleString() %></div>
+                <div class="col-3" style="padding:0;">경기수: <%= result[i].total_num %></div>
+                <div class="col-5 text-center" style="padding:0;"><span>금액: </span><span class="fw-bold"><%= result[i].money %></span></div>
+                <div class="col-4 fw-bold text-end" style="padding:0;"><%= result[i].state %></div>
+            </div>
+            <% } %>
         </div>
     </div>
 </body>
