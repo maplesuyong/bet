@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/betting.css">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <!-- jQuery core -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+    <title>베팅페이지</title>
+</head>
+<body>
+    <ul class="nav nav-pills nav-fill fixed-top navbar-light bg-light">
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" aria-current="page" href="/">메인</a>
+        </li>
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" href="schedule">경기일정</a>    
+        </li>
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" href="profile">내정보</a>
+        </li>
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">베팅용지</a>
+        </li>
+    </ul>
+
+    <!-- 베팅용지 -->
+    <form action="/paying" method="post" onsubmit="return conditionCheck();">
+        <div class="offcanvas offcanvas-bottom container-fluid" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="offcanvasBottomLabel">MY BETTINGs</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body small" id="paper">
+                <!-- 선택된 경기 목록 (버튼을 통해서 추가된다) -->
+                <input type="hidden" id="length" name="length" value=0>
+            </div>
+            <!-- 최종예상결과 -->
+            <div class="row m-1 align-items-center" id="final_div_1">
+                <div class="col-2">
+                    <div>배당</div>
+                    <input id="rate" name="final_rate" type="number" value="1" readonly></input>
+                </div>
+                <div class="col-3">
+                    <div>베팅금액</div>
+                    <input id="money" name="money" type="number" required></input>
+                </div>
+                <div class="col-4">
+                    <div>예상적중금액</div>
+                    <input id="final_money" name="final_money" type="number" readonly></input>
+                </div>
+                <div class="col-3 align-middle"><button class="btn btn-primary" type="submit">베팅</button></div>
+            </div>  
+        </div>
+    </form>
+
+    <!-- betting page content -->
+    <div class="container-fluid">
+        <ul class="list-group p-2">
+            <li class="list-group-item p-3">아이디: <%= session %></li>
+            <li class="list-group-item p-3" id="display_money" data-money="<%= money %>">돈: <%= money %></li>
+        </ul>
+    </div>
+    <div class="container-fluid">
+        <% for(var i=0; i < result.length; i++) { %>
+        <div class="card m-2" style="border: 1px solid black;">
+            <div class="row m-2">
+                <div class="col-4 text-center" style="border: 1px solid rgba(0,0,0,.125); text-align: center;"><%= result[i].league_name %></div>
+                <div class="col-8 text-center" style="border: 1px solid rgba(0,0,0,.125);"><%= result[i].match_date.toLocaleString() %></div>
+            </div>
+            <div class="row m-2">
+                <div class="col-6 text-center" style="border: 1px solid rgba(0,0,0,.125);">
+                    <div style="border: 1px solid rgba(0,0,0,.125);">홈팀</div>  
+                    <img src="/img/<%= result[i].home %>.svg" style="width: auto; height: 50px;" class="card-img-top p-2">
+                    <div><%= result[i].home_name %></div>
+                </div>
+                <div class="col-6 text-center" style="border: 1px solid rgba(0,0,0,.125);">
+                    <div style="border: 1px solid rgba(0,0,0,.125);">원정팀</div>  
+                    <img src="/img/<%= result[i].away %>.svg" style="width: auto; height: 50px;" class="card-img-top p-2">
+                    <div><%= result[i].away_name %></div>
+                </div>
+            </div>
+            <!-- 베팅/오리지날 -->
+            <div class="row m-1" style="border: 1px solid rgba(0,0,0,.125); text-align: center;">
+                <div class="my-2">오리지날</div>
+                <% if(result[i].draw_rate) { %>
+                <div class="col-4">승</div>
+                <div class="col-4">무</div>
+                <div class="col-4">패</div>
+                <div class="col-4 text-danger"><label for="one<%= i %>"><%= result[i].home_rate %></label></div>
+                <div class="col-4 text-danger"><label for="two<%= i %>"><%= result[i].draw_rate %></label></div>
+                <div class="col-4 text-danger"><label for="three<%= i %>"><%= result[i].away_rate %></label></div>
+                <div class="col-4"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="one<%= i %>" value="<%= result[i].home_rate %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="오리지날" data-pick="승"></div>
+                <div class="col-4"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="two<%= i %>" value="<%= result[i].draw_rate %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="오리지날" data-pick="무"></div>
+                <div class="col-4"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="three<%= i %>" value="<%= result[i].away_rate %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="오리지날" data-pick="패"></div>
+                <% } else { %>
+                <div class="col-6">승</div>
+                <div class="col-6">패</div>
+                <div class="col-6 text-danger"><label for="one<%= i %>"><%= result[i].home_rate %></label></div>
+                <div class="col-6 text-danger"><label for="two<%= i %>"><%= result[i].away_rate %></label></div>
+                <div class="col-6"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="one<%= i %>" value="<%= result[i].home_rate %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="오리지날" data-pick="승"></div>
+                <div class="col-6"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="two<%= i %>" value="<%= result[i].away_rate %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="오리지날" data-pick="패"></div>
+                <% } %>
+            </div>
+            <!-- 베팅/핸디캡 -->
+            <div class="row m-1" style="border: 1px solid rgba(0,0,0,.125); text-align: center;">
+                <% if(result[i].standard_handy > 0) { %>
+                <div class="my-2">핸디캡 <span class="text-danger">+<%= result[i].standard_handy %></span></div>
+                <% } else { %>
+                <div class="my-2">핸디캡 <span class="text-danger"><%= result[i].standard_handy %></span></div>
+                <% } %>
+                <% if(result[i].draw_rate) { %>
+                <div class="col-4">승</div>
+                <div class="col-4">무</div>
+                <div class="col-4">패</div>
+                <div class="col-4 text-danger"><label for="four<%= i %>"><%= result[i].home_rate_handy %></label></div>
+                <div class="col-4 text-danger"><label for="five<%= i %>"><%= result[i].draw_rate_handy %></label></div>
+                <div class="col-4 text-danger"><label for="six<%= i %>"><%= result[i].away_rate_handy %></label></div>
+                <div class="col-4"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="four<%= i %>" value="<%= result[i].home_rate_handy %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="핸디" data-pick="핸승"></div>
+                <div class="col-4"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="five<%= i %>" value="<%= result[i].draw_rate_handy %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="핸디" data-pick="핸무"></div>
+                <div class="col-4"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="six<%= i %>" value="<%= result[i].away_rate_handy %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="핸디" data-pick="핸패"></div>
+                <% } else { %>
+                <div class="col-6">승</div>
+                <div class="col-6">패</div>
+                <div class="col-6 text-danger"><label for="four<%= i %>"><%= result[i].home_rate_handy %></label></div>
+                <div class="col-6 text-danger"><label for="five<%= i %>"><%= result[i].away_rate_handy %></label></div>
+                <div class="col-6"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="four<%= i %>" value="<%= result[i].home_rate_handy %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="핸디" data-pick="핸승"></div>
+                <div class="col-6"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="five<%= i %>" value="<%= result[i].away_rate_handy %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="핸디" data-pick="핸패"></div>
+                <% } %>
+            </div>
+            <!-- 베팅/언오버 -->
+            <div class="row m-1" style="border: 1px solid rgba(0,0,0,.125); text-align: center;" >
+                <div class="my-2">U/O <span class="text-danger"><%= result[i].standard_unover %></span></div>
+                <div class="col-6">U</div>
+                <div class="col-6">O</div>
+                <div class="col-6 text-danger"><label for="seven<%= i %>"><%= result[i].home_rate_unover %></label></div>
+                <div class="col-6 text-danger"><label for="eight<%= i %>"><%= result[i].away_rate_unover %></label></div>
+                <div class="col-6"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="seven<%= i %>" value="<%= result[i].home_rate_unover %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="언오버" data-pick="언더"></div>
+                <div class="col-6"><input class="form-check-input" type="radio" name="choice<%= result[i].game_id %>" id="eight<%= i %>" value="<%= result[i].away_rate_unover %>" data-home="<%= result[i].home_name %>" data-away="<%= result[i].away_name %>" data-type="언오버" data-pick="오버"></div>
+            </div>
+            <!-- 경기추가 버튼 -->
+            <div class="card-body text-center">
+                <button class="btn btn-primary" id="choice<%= result[i].game_id %>" onClick="addGame(this.id, '<%= result[i].league_name %>', '<%= result[i].match_date.toLocaleString() %>', '<%= result[i].game_id %>');">경기추가</button>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <script src="/js/betting_paper_add_game.js"></script>
+    <script src="/js/betting_paper_delete_game.js"></script>
+    <script src="/js/betting_game_condition_check.js"></script>
+    <script>
+        var oldVal = "";
+        $("#money").on("propertychange change keyup paste input", function() {
+            var currentVal = $(this).val();
+            if(currentVal == oldVal) {
+                return;
+            }  
+            oldVal = currentVal;
+            var jq_rate = document.getElementById('rate').value;
+            document.getElementById('final_money').value = Math.ceil(jq_rate * oldVal / 100) * 100;
+        });
+    </script>
+</body>
+</html>

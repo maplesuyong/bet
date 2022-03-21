@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>관리자페이지</title>
+        <!-- Bootstrap core CSS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    </head>
+    <body>
+        <div id="wrapper">
+            <!-- Page content wrapper-->
+            <div id="page-content-wrapper">
+                <!-- 상단 navbar-->
+                <%- include("../../common/admin/navbar") %>
+                <!-- Page content-->
+                <div class="container-fluid" style="max-width: 700px;">
+                    <!-- games 테이블에 등록된 경기 목록 -->
+                    <h1 class="m-3" style="text-align:center">경기관리</h1>
+                    <div class="row">
+                        <% for(var i = 0; i < result.length; i++) { %>
+                        <div class="my-2 pb-1 border-top border-bottom border-3 border-dark">
+                            <div class="row pb-1 text-center">
+                                <div class="col-1 p-0 fw-bold border border-3 border-dark rounded-circle"><%= length-10*(page-1)-i %></div>
+                                <div class="col-4 fw-bold text-center"><%= result[i].league_name %></div>
+                                <div class="col-7"><%= result[i].match_date.toLocaleString() %></div>
+                            </div>
+                            <div class="row pb-1">
+                                <div class="col-4" style="font-size: 14px;"><%= result[i].home_name %></div>
+                                <div class="col-4" style="font-size: 14px;"><%= result[i].away_name %></div>
+                                <div class="col-4 p-0 text-center"><button class="btn-sm btn-info text-white py-0 px-3" href="/admin_game_modify/<%= result[i].game_id %>">상세정보</button></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <% if(!result[i].result){ %>
+                                    <!-- Button trigger modal -->
+                                    <div class="text-center"><button type="button" class="btn-sm btn-warning text-white py-0 px-3" data-bs-toggle="modal" data-bs-target="#exampleModal<%= result[i].game_id %>">점수등록</button></div>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal<%= result[i].game_id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">점수등록</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form action="/admin_game_score/<%= result[i].game_id %>" method="post">
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-3 text-center">홈팀</div>
+                                                            <div class="col-3"><input class="form-control" type="number" name="home" autocomplete="off" required></div>
+                                                            <div class="col-3 text-center">원정팀</div>
+                                                            <div class="col-3"><input class="form-control" type="number" name="away" autocomplete="off" required></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                        <button type="submit" class="btn btn-primary">저장</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } else if (result[i].result == "무효") { %>
+                                    <div class="row">   
+                                        <div class="col-12 fw-bold text-center"><%= result[i].result %></div>
+                                    </div>
+                                    <% } else { %>
+                                    <div class="row">   
+                                        <div class="col-4 fw-bold"><%= result[i].home_score %></div>
+                                        <div class="col-4 fw-bold"><%= result[i].result %></div>
+                                        <div class="col-4 fw-bold"><%= result[i].away_score %></div>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <% if(!result[i].result){ %>
+                                <div class="col-2"></div>
+                                <div class="col-2 p-0 text-center"><button class="btn-sm btn-primary py-0" onclick="location.href='/admin_game_modify/<%= result[i].game_id %>'">수정</button></div>
+                                <div class="col-2 p-0 text-center"><button class="btn-sm btn-danger py-0" onclick="if(confirm('<%= result[i].game_id %>번 경기를 무효로 하시겠습니까?')) {location.href='/admin_game_invalid/<%= result[i].game_id %>';}">무효</button></div> 
+                                <% } else if (result[i].result == "무효") { %>
+                                <div class="col-2 p-0 text-center">&nbsp;</div>
+                                <div class="col-4 p-0 text-center"><button class="btn-sm btn-danger py-0" onclick="if(confirm('<%= result[i].game_id %>번 경기를 삭제하시겠습니까?')) {location.href='/admin_game_delete/<%= result[i].game_id %>';}">삭제</button></div>
+                                <% } else if (!result[i].final_result) { %>
+                                <div class="col-4 p-0 text-center">
+                                    <!-- Button trigger modal -->
+                                    <div class="text-center"><button type="button" class="btn-sm btn-warning text-white py-0 px-3" data-bs-toggle="modal" data-bs-target="#exampleModal2<%= result[i].game_id %>">점수수정</button></div>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal2<%= result[i].game_id %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">점수수정</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form action="/admin_game_score/<%= result[i].game_id %>" method="post">
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-3 text-center">홈팀</div>
+                                                            <div class="col-3"><input class="form-control" type="number" name="home" autocomplete="off" required></div>
+                                                            <div class="col-3 text-center">원정팀</div>
+                                                            <div class="col-3"><input class="form-control" type="number" name="away" autocomplete="off" required></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                        <button type="submit" class="btn btn-primary">저장</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2 p-0 text-center"><button class="btn-sm btn-danger py-0" onclick="if(confirm('<%= result[i].game_id %>번 경기를 무효로 하시겠습니까?')) {location.href='/admin_game_invalid/<%= result[i].game_id %>';}">무효</button></div>   
+                                <div class="col-6">&nbsp;</div>
+                                <div class="col-6 py-1 text-center"><button class="btn-sm btn-primary py-0" onclick="if(confirm('<%= result[i].game_id %>번 경기결과를 확정지으시겠습니까?')) {location.href='/admin_game_result/<%= result[i].game_id %>';}">베팅결과처리</button></div>
+                                <% } else { %>
+                                <div class="col-6">&nbsp;</div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                    <!-- 경기목록 페이지네이션 -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <% for(var i=0; i < length/10; i++) { %>
+                            <li class="page-item"><a class="page-link" href="/admin/game/<%= i+1 %>"><%= i+1 %></a></li>
+                            <% } %>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,4 @@
+body { padding-top: 70px; }
+
+/* 메인 콘텐츠 최대 width 제한 */
+.container-fluid {max-width: 700px;}

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/schedule.css">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <title>경기일정</title>
+</head>
+<body>
+    <ul class="nav nav-pills nav-fill fixed-top navbar-light bg-light">
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" aria-current="page" href="/">메인</a>
+        </li>
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" href="betting">베팅</a>    
+        </li>
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" href="profile">내정보</a>
+        </li>
+        <li class="nav-item py-2 px-1">
+            <a class="nav-link active p-3" href="logout">로그아웃</a>
+        </li>
+    </ul>
+    <div class="container-fluid">
+        <!-- 달력 -->
+        <div class="row my-2 text-center">
+            <div class="col-2"></div>
+            <form class="col-2" action="/schedule" method="post" name="yesterday_form">
+                <input type="hidden" name="choice" value="<%= yesterday %>">
+                <div onclick="document.forms['yesterday_form'].submit()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg><%= yesterday_date %>
+                </div>
+            </form>
+            <input type="hidden" id="test" value="<%= today %>">
+            <form class="col-4" action="/schedule" method="post" name="today_form">
+                <input type="date" id="box" name="choice" onchange="document.forms['today_form'].submit()">
+            </form>
+            <form class="col-2" action="/schedule" method="post" name="tomorrow_form">
+                <input type="hidden" name="choice" value="<%= tomorrow %>">
+                <div onclick="document.forms['tomorrow_form'].submit()">
+                    <%= tomorrow_date %><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+                </div>
+            </form>
+            <div class="col-2"></div>
+        </div>
+
+        <!-- 필터 -->
+        <form action="/schedule" method="post" onSubmit="return submitCheck();">
+            <input type="hidden" name="choice" value="<%= today %>">
+            <div class="card border-2 border-dark m-2">
+                <!-- 필터(종목) -->
+                <div class="row m-2">
+                    <div class="fw-bold fs-4 text-center">종목</div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="sports" value="전체" id="sport1" onClick="displayLeague(this.value)">
+                        <label class="form-check-label" for="sport1">전체</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="sports" value="축구" id="sport2" onClick="displayLeague(this.value)">
+                        <label class="form-check-label" for="sport2">축구</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="sports" value="야구" id="sport3" onClick="displayLeague(this.value)">
+                        <label class="form-check-label" for="sport3">야구</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="sports" value="롤" id="sport4" onClick="displayLeague(this.value)">
+                        <label class="form-check-label" for="sport4">롤</label>
+                    </div>
+                </div>
+                
+                <!-- 필터(리그) / 축구일때 -->
+                <div class="row m-2" id="football" style="display:none">
+                    <div class="fw-bold fs-4 text-center">리그</div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="전체" id="league1_soccer">
+                        <label class="form-check-label" for="league1_soccer">전체</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="EPL" id="league2_soccer">
+                        <label class="form-check-label" for="league2_soccer">EPL</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="분데스리가" id="league3_soccer">
+                        <label class="form-check-label" for="league3_soccer">분데스리가</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="K리그" id="league4_soccer">
+                        <label class="form-check-label" for="league4_soccer">K리그</label>
+                    </div>
+                </div>
+    
+                <!-- 필터(리그) / 야구일때 -->
+                <div class="row m-2" id="baseball" style="display:none">
+                    <div class="fw-bold fs-4 text-center">리그</div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="전체" id="league1_baseball">
+                        <label class="form-check-label" for="league1_baseball">전체</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="KBO" id="league2_baseball">
+                        <label class="form-check-label" for="league2_baseball">KBO</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="MLB" id="league3_baseball">
+                        <label class="form-check-label" for="league3_baseball">MLB</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="NPB" id="league4_baseball">
+                        <label class="form-check-label" for="league4_baseball">NPB</label>
+                    </div>
+                </div>
+    
+                <!-- 필터(리그) / 롤일때 -->
+                <div class="row m-2" id="lol" style="display:none">
+                    <div class="fw-bold fs-4 text-center">리그</div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="전체" id="league1_lol">
+                        <label class="form-check-label" for="league1_lol">전체</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="LCK" id="league2_lol">
+                        <label class="form-check-label" for="league2_lol">LCK</label>
+                    </div>
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="leagues" value="LPL" id="league3_lol">
+                        <label class="form-check-label" for="league3_lol">LPL</label>
+                    </div>
+                </div>
+    
+                <!-- 필터적용 버튼-->
+                <div class="m-2 text-center">
+                    <button class="btn btn-success" type="submit">적용</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- 경기 -->
+        <% for(var i=0; i < result.length; i++) { %>
+        <div class="card border-2 border-dark m-2">
+            <div class="row m-2">
+                <div class="col-4 border text-center"><%= result[i].league_name %></div>
+                <div class="col-8 border text-center"><%= result[i].match_date.toLocaleTimeString() %></div>
+            </div>
+            <div class="row mx-2">
+                <div class="col-6 border text-center">    
+                    <img src="/img/<%= result[i].home %>.svg" style="width: auto; height: 50px;" class="card-img-top p-2">
+                    <div><%= result[i].home_name %></div>
+                </div>
+                <div class="col-6 border text-center">
+                    <img src="/img/<%= result[i].away %>.svg" style="width: auto; height: 50px;" class="card-img-top p-2">
+                    <div><%= result[i].away_name %></div>
+                </div>
+            </div>  
+            <div class="row mx-2 border text-center">
+                <div class="col-6 text-danger"><%= result[i].home_rate %></div>
+                <div class="col-6 text-danger"><%= result[i].away_rate %></div>
+            </div>
+            <div class="card-body text-center">
+                <a href="/game/<%= result[i].game_id %>" class="btn btn-primary">상세정보</a>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <script src="/js/schedule_league_display.js"></script>
+    <script src="/js/schedule_filter_valid_check.js"></script>
+    <script src="/js/schedule_calender_today.js"></script>
+</body>
+</html>
