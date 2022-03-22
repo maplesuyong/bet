@@ -22,24 +22,11 @@ router.use(session({
     saveUninitialized: true
 }));
 
-router.get('/', function(req, res){
+router.get('/bet', function(req, res){
     if(req.session.user){
-        db.query('SELECT * FROM bets WHERE user_id = ?', [req.session.user.code], function(err,result){
+        db.query('SELECT * FROM bets WHERE user_id = ? ORDER BY bet_date DESC', [req.session.user.code], function(err,result){
             if (err) throw err;
-            res.render("charge", {'result' : result});
-        });
-    } else {
-        res.redirect("/login");
-    }
-});
-
-router.post('/apply', function(req, res){
-    var datetime = new Date();
-    if(req.session.user){
-        db.query('INSERT INTO charges (user_id, money, charge_point, apply_date) VALUES (?, ?, ?, ?)', [req.session.user.code, req.body.money, req.body.point, datetime], function(err,result){
-            if (err) throw err;
-            console.log("충전신청완료");
-            res.redirect("/profile");
+            res.render("profile/menu/profile_bet", {'result' : result});
         });
     } else {
         res.redirect("/login");

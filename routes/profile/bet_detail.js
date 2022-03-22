@@ -22,28 +22,6 @@ router.use(session({
     saveUninitialized: true
 }));
 
-router.get('/', function(req, res){
-    if(req.session.user){
-        db.query('SELECT * FROM users WHERE id=?', [req.session.user.id], function(err,result){
-            if (err) throw err;
-            res.render("profile/menu/profile", {'result' : result});
-        });
-    } else {
-        res.redirect("/login");
-    }
-});
-
-router.get('/bet', function(req, res){
-    if(req.session.user){
-        db.query('SELECT * FROM bets WHERE user_id = ? ORDER BY bet_date DESC', [req.session.user.code], function(err,result){
-            if (err) throw err;
-            res.render("profile/menu/profile_bet", {'result' : result});
-        });
-    } else {
-        res.redirect("/login");
-    }
-});
-
 router.get('/bet/:bet_id', function(req, res){
     if(req.session.user){
         db.query('SELECT * FROM bets WHERE user_id = ? AND bet_id = ?', [req.session.user.code, req.params.bet_id], function(err,result){
@@ -58,28 +36,6 @@ router.get('/bet/:bet_id', function(req, res){
                 if (err) throw err;
                 res.render("profile/crud/profile_bet_detail", {'result' : result, 'result2' : result2});
             });
-        });
-    } else {
-        res.redirect("/login");
-    }
-});
-
-router.get('/charge', function(req, res){
-    if(req.session.user){
-        db.query('SELECT * FROM charges WHERE user_id = ? ORDER BY apply_date DESC', [req.session.user.code], function(err,result){
-            if (err) throw err;
-            res.render("profile/menu/profile_charge", {'result' : result});
-        });
-    } else {
-        res.redirect("/login");
-    }
-});
-
-router.get('/point', function(req, res){
-    if(req.session.user){
-        db.query('SELECT * FROM points WHERE user_id = ? ORDER BY record_date DESC', [req.session.user.code], function(err,result){
-            if (err) throw err;
-            res.render("profile/menu/profile_point", {'result' : result});
         });
     } else {
         res.redirect("/login");
